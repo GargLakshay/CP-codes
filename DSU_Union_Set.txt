@@ -1,0 +1,25 @@
+class DSU {
+	ll n;
+	V parent, rank;
+ public:
+	DSU(ll x)
+	{
+		n = x;
+		parent.resize(n);
+		rank.resize(n, 0);
+		f(i, 0, n) parent[i] = i;
+	}
+	ll get(ll a)
+	{
+		return parent[a] = parent[a] == a ? a : get(parent[a]);
+	}
+	void merge(ll a, ll b)
+	{
+		a = get(a);
+		b = get(b);
+		if (a == b) return;
+		if (rank[a] == rank[b]) rank[a]++;
+		if (rank[a] > rank[b]) parent[b] = a;
+		else parent[a] = b;
+	}
+};
