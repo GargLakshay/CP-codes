@@ -1,0 +1,8 @@
+ll power(ll x, ll y, ll m)
+{
+	if (y == 0) return 1;
+	ll p = power(x, y / 2, m) % m;
+	p = p * p % m;
+	if (y % 2 == 0) return p;
+	return x * p % m;
+}
