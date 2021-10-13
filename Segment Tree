@@ -1,0 +1,56 @@
+/***********************segment tree*************************************/
+//tree[4*N+1]---1-index
+void BuildTree(V &tree,V &arr, ll ind,ll s, ll e)
+{
+	if(s>e) return;
+	if(s==e) //leaf node
+	{
+		tree[ind]=arr[l];
+		return;
+	}
+	ll mid=(s+e)/2;
+	BuildTree(tree,arr,2*ind,s,mid);
+	BuildTree(tree,arr,2*ind+1,mid+1,e);
+	tree[ind]=min(tree[2*ind],tree[2*ind+1]);
+	return;
+}
+
+ll query(V &tree,ll ind,ll s,ll e, ll l,ll r)
+{
+	//no overlap
+	if(l>e||r<s) return INT_MAX;
+	// complete overlap
+	if(l<=s&&r>=e) return tree[ind];
+	ll mid=(s+e)/2;
+	ll left=query(tree,2*ind,s,mid,l,r);
+	ll right=query(tree,2*ind+1,mid+1,e,l,r);
+	return min(left,right);
+}
+
+void updateNode(V &tree,ll ind, ll s,ll e,ll i,ll val)
+{
+	// no overlap
+	if(i<s||i>e) return;
+	if(s==e){
+		tree[ind]=val;
+		return;
+	}
+	ll mid=(s+e)/2;
+	updateNode(tree,2*ind,s,mid,i,val);
+	updateNode(tree,2*ind+1,mid+1,e,i,val);
+	tree[ind]=min(tree[2*ind],tree[2*ind+1]);
+}
+
+void updateRange(V &tree,ll ind, ll s, ll e, ll rs, ll re, ll inc)
+{
+	// no overlap
+	if(rs>e||re<s) return;
+	if(s==e){
+		tree[ind]+=inc;
+		return;
+	}
+	ll mid=s+e; mid/=2;
+	updateRange(tree,2*ind,s,mid,rs,re,inc);
+	updateRange(tree,2*ind+1,mid+1,e,rs,re,inc);
+	tree[ind]=min(tree[2*ind],tree[2*ind+1]);
+}
