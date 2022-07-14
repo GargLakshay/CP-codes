@@ -1,0 +1,60 @@
+V level;// size==n nodes
+V adj[200001];
+VV parent;// parent[node][k]
+
+void find_level(ll n) { //intialising level array n nodes
+	level.clear();
+	level.resize(n);
+}
+
+void dfs_parent(ll node, ll p, V& visited, V adj[], VV &parent,ll l) {// finding first parent and level of nodes
+	parent[node][0] = p;
+	visited[node] = 1;
+	level[node]=l;
+	for (auto child : adj[node]) {
+		if (!visited[child])
+			dfs_parent(child, node, visited, adj, parent,l+1);
+	}
+}
+void find_parent(ll n) {  //parent[node][k]-> kth parent of ith node
+	parent.clear();
+	ll limit = 31;
+	parent.resize(n, V (limit, -1));
+	V visited(n);
+	dfs_parent(0, -1, visited, adj, parent,0);
+
+	f(i, 1, limit) {
+		f(node, 0, n) {
+			ll x = parent[node][i - 1];
+			if (x == -1) x = node;
+			parent[node][i] = parent[x][i - 1];
+		}
+	}
+}
+
+ll kth_parent(ll node, VV &parent, ll k) {  // kth parent of ith node
+	if (k == 0) return node;
+	ll log_val = (ll)log2(k);
+	ll mx_power = power(2, log_val, M);
+	return kth_parent(parent[node][log_val], parent, k - mx_power);
+
+}
+ll get_lca(ll a, ll b) { 	// lca of two nodes
+
+	if (level[a] > level[b]) swap(a, b);
+	b = kth_parent(b, parent, level[b] - level[a]);
+	if (a == b) return a;
+	ll limit = 31;
+	for (ll i = limit - 1; i >= 0; i--) {
+		if (parent[a][i] != -1 && (parent[a][i] != parent[b][i])) {
+			a = parent[a][i];
+			b = parent[b][i];
+		}
+	}
+	return parent[a][0];
+}
+
+
+ll get_distance(ll a, ll b) {	// distance between two nodes
+	return level[a] + level[b] - 2 * level[get_lca(a, b)];
+}
